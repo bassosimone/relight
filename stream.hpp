@@ -15,9 +15,9 @@
 #include <stddef.h>
 
 extern "C" {
-void relight_bufev_event(bufferevent *, short, void *);
-void relight_bufev_read(bufferevent *, void *);
-void relight_bufev_write(bufferevent *, void *);
+void RELIGHT_C(bufev_event)(bufferevent *, short, void *);
+void RELIGHT_C(bufev_read)(bufferevent *, void *);
+void RELIGHT_C(bufev_write)(bufferevent *, void *);
 }
 
 #ifdef RELIGHT_NAMESPACE
@@ -30,8 +30,8 @@ class Stream {
         if ((bufev_ = bufferevent_socket_new(poller->get_event_base(), filenum,
                                              BEV_OPT_CLOSE_ON_FREE)) == nullptr)
             throw std::bad_alloc();
-        bufferevent_setcb(bufev_, relight_bufev_read, relight_bufev_write,
-                          relight_bufev_event, this);
+        bufferevent_setcb(bufev_, RELIGHT_C(bufev_read), RELIGHT_C(bufev_write),
+                          RELIGHT_C(bufev_event), this);
         if (bufferevent_enable(bufev_, EV_READ) != 0) {
             throw std::runtime_error("bufferevent_enable");
         }
