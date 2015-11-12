@@ -4,7 +4,11 @@
 #include <event2/buffer.h>
 
 #include <stdexcept>
-#include <memory>
+#include <new>
+
+#include <stddef.h>
+
+struct evbuffer;
 
 #ifdef RELIGHT_NAMESPACE
 namespace RELIGHT_NAMESPACE {

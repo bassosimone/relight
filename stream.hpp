@@ -10,10 +10,16 @@
 #include <event2/util.h> // Pull PF_INET, PF_INET6
 
 #include <functional>
-#include <memory>
+#include <new>
+#include <stdexcept>
 #include <string>
 
-#include <stddef.h>
+#include <string.h>
+
+#include <netinet/in.h>
+#include <sys/socket.h>
+
+struct bufferevent;
 
 extern "C" {
 void RELIGHT_C(bufev_event)(bufferevent *, short, void *);

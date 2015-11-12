@@ -2,12 +2,13 @@
 #define RELIGHT_POLLER_HPP
 
 #include <event2/event.h>
+#include <event2/util.h>
 
 #include <functional>
-#include <memory>
+#include <new>
 #include <stdexcept>
 
-#include <stddef.h>
+struct event_base;
 
 extern "C" {
 void RELIGHT_C(once_cb)(evutil_socket_t, short, void *);

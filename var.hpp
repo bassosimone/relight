@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
 
 #ifdef RELIGHT_NAMESPACE
 namespace RELIGHT_NAMESPACE {
