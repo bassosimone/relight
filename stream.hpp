@@ -103,17 +103,16 @@ class Stream {
     }
 
     void close() {
-        if (bufferevent_setfd(bufev_, -1) != 0) {
-            throw std::runtime_error("bufferevent_setfd");
-        }
-    }
-
-    ~Stream() {
         if (bufev_ != nullptr) {
             bufferevent_free(bufev_);
+            data_fn_ = nullptr;
+            flush_fn_ = nullptr;
+            error_fn_ = nullptr;
             bufev_ = nullptr;
         }
     }
+
+    ~Stream() { close(); }
 
   private:
     bufferevent *bufev_ = nullptr;

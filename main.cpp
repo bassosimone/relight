@@ -7,7 +7,6 @@ int main() {
         stream->on_flush([=]() {
             stream->write("flushed\n");
             stream->on_data([=](Var<Bytes>) {
-                stream->close();
                 poller->break_loop();
             });
             stream->on_flush([]() {});
@@ -15,4 +14,5 @@ int main() {
         stream->write("received first chunk\n");
     });
     poller->loop();
+    stream->close();
 }
