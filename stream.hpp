@@ -7,7 +7,7 @@
 
 #include <event2/bufferevent.h>
 #include <event2/event.h>
-#include <event2/util.h> // Pull PF_INET, PF_INET6
+#include <event2/util.h>
 
 #include <functional>
 #include <new>
