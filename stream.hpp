@@ -171,6 +171,7 @@ class Stream {
     void close() {
         if (bufev_ != nullptr) {
             bufferevent_free(bufev_);
+            connect_fn_ = nullptr;
             data_fn_ = nullptr;
             flush_fn_ = nullptr;
             error_fn_ = nullptr;
