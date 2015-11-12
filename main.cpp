@@ -1,5 +1,10 @@
-#include "relight-impl.hpp"
+#include "poller.hpp"
+#include "stream.hpp"
+#include "var.hpp"
+
 #include <iostream>
+
+class Bytes;
 
 int main() {
     Var<Poller> poller(new Poller);
