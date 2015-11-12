@@ -2,17 +2,17 @@
 
 int main() {
     Var<Poller> poller(new Poller);
-    Var<Stream> socket(new Stream(poller, 0));
-    socket->on_data([=](Var<Bytes>) {
-        socket->on_flush([=]() {
-            socket->write("flushed\n");
-            socket->on_data([=](Var<Bytes>) {
-                socket->close();
+    Var<Stream> stream(new Stream(poller, 0));
+    stream->on_data([=](Var<Bytes>) {
+        stream->on_flush([=]() {
+            stream->write("flushed\n");
+            stream->on_data([=](Var<Bytes>) {
+                stream->close();
                 poller->break_loop();
             });
-            socket->on_flush([]() {});
+            stream->on_flush([]() {});
         });
-        socket->write("received first chunk\n");
+        stream->write("received first chunk\n");
     });
     poller->loop();
 }
