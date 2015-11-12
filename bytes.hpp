@@ -45,6 +45,13 @@ class Bytes {
         }
     }
 
+    ~Bytes() {
+        if (evbuf_ != nullptr) {
+            evbuffer_free(evbuf_);
+            evbuf_ = nullptr;
+        }
+    }
+
   private:
     evbuffer *evbuf_ = nullptr;
 };
