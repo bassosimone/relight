@@ -5,29 +5,25 @@
 #define RELIGHT_NAMESPACE
 #endif
 
-#ifndef RELIGHT_C
-#define RELIGHT_C(__name__) relight_ ## __name__
-#endif
-
 #include "stream.hpp"
 
-void RELIGHT_C(once_cb)(evutil_socket_t, short, void *ptr) {
+void relight_once_cb(evutil_socket_t, short, void *ptr) {
     auto funcptr = static_cast<std::function<void()> *>(ptr);
     (*funcptr)();
     delete funcptr;
 }
 
-void RELIGHT_C(bufev_read)(bufferevent *, void *ptr) {
+void relight_bufev_read(bufferevent *, void *ptr) {
     auto so = static_cast<RELIGHT_NAMESPACE::Stream *>(ptr);
     so->emit_read();
 }
 
-void RELIGHT_C(bufev_write)(bufferevent *, void *ptr) {
+void relight_bufev_write(bufferevent *, void *ptr) {
     auto so = static_cast<RELIGHT_NAMESPACE::Stream *>(ptr);
     so->emit_flush();
 }
 
-void RELIGHT_C(bufev_event)(bufferevent *, short event, void *ptr) {
+void relight_bufev_event(bufferevent *, short event, void *ptr) {
     auto so = static_cast<RELIGHT_NAMESPACE::Stream *>(ptr);
     so->emit_event(event);
 }

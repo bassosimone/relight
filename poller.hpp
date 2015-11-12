@@ -11,7 +11,7 @@
 struct event_base;
 
 extern "C" {
-void RELIGHT_C(once_cb)(evutil_socket_t, short, void *);
+void relight_once_cb(evutil_socket_t, short, void *);
 }
 
 #ifdef RELIGHT_NAMESPACE
@@ -35,7 +35,7 @@ class Poller {
 
     void call_soon(std::function<void()> func) {
         auto funcptr = new std::function<void()>(func);
-        if (event_base_once(evbase_, -1, EV_TIMEOUT, RELIGHT_C(once_cb),
+        if (event_base_once(evbase_, -1, EV_TIMEOUT, relight_once_cb,
                             funcptr, nullptr) != 0) {
             throw std::runtime_error("event_base_once");
         }
