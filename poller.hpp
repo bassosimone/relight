@@ -9,6 +9,10 @@
 
 #include <stddef.h>
 
+extern "C" {
+void RELIGHT_C(once_cb)(evutil_socket_t, short, void *);
+}
+
 #ifdef RELIGHT_NAMESPACE
 namespace RELIGHT_NAMESPACE {
 #endif
@@ -27,6 +31,14 @@ class Poller {
     Poller& operator=(Poller &&) = delete;
 
     event_base *get_event_base() { return evbase_; }
+
+    void call_soon(std::function<void()> func) {
+        auto funcptr = new std::function<void()>(func);
+        if (event_base_once(evbase_, -1, EV_TIMEOUT, RELIGHT_C(once_cb),
+                            funcptr, nullptr) != 0) {
+            throw std::runtime_error("event_base_once");
+        }
+    }
 
     void loop() {
         if (event_base_dispatch(evbase_) != 0) {
