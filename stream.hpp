@@ -28,8 +28,9 @@ class Stream {
   public:
     Stream(Var<Poller> poller, evutil_socket_t filenum) : poller_(poller) {
         if ((bufev_ = bufferevent_socket_new(poller->get_event_base(), filenum,
-                                             BEV_OPT_CLOSE_ON_FREE)) == nullptr)
+                                           BEV_OPT_CLOSE_ON_FREE)) == nullptr) {
             throw std::bad_alloc();
+        }
         bufferevent_setcb(bufev_, RELIGHT_C(bufev_read), RELIGHT_C(bufev_write),
                           RELIGHT_C(bufev_event), this);
         if (bufferevent_enable(bufev_, EV_READ) != 0) {
