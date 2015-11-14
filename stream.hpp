@@ -2,7 +2,9 @@
 #define RELIGHT_STREAM_HPP
 
 #include "bytes.hpp"
+#include "error-code.h"
 #include "poller.hpp"
+#include "utils-net.h"
 #include "var.hpp"
 
 #include <event2/bufferevent.h>
@@ -57,20 +59,9 @@ class Stream {
                       std::function<void(int)> eb) {
         on_connect(cb);
         on_error(eb);
-        if (bufferevent_getfd(bufev_) != -1) {
-            emit_error(10);
-            return;
-        }
-        sockaddr_in sin;
-        memset(&sin, 0, sizeof(sin));
-        sin.sin_family = AF_INET;
-        if (evutil_inet_pton(AF_INET, addr, &sin.sin_addr) != 1) {
-            emit_error(20);
-            return;
-        }
-        if (bufferevent_socket_connect_hostname(bufev_, nullptr, AF_INET, addr,
-                                                port) != 0) {
-            emit_error(30);
+        ErrorCode code = relight_connect(bufev_, AF_INET, addr, port);
+        if (code != 0) {
+            emit_error(code);
             return;
         }
     }
@@ -79,20 +70,9 @@ class Stream {
                       std::function<void(int)> eb) {
         on_connect(cb);
         on_error(eb);
-        if (bufferevent_getfd(bufev_) != -1) {
-            emit_error(10);
-            return;
-        }
-        sockaddr_in6 sin6;
-        memset(&sin6, 0, sizeof(sin6));
-        sin6.sin6_family = AF_INET6;
-        if (evutil_inet_pton(AF_INET6, addr, &sin6.sin6_addr) != 1) {
-            emit_error(20);
-            return;
-        }
-        if (bufferevent_socket_connect_hostname(bufev_, nullptr, AF_INET6, addr,
-                                                port) != 0) {
-            emit_error(30);
+        ErrorCode code = relight_connect(bufev_, AF_INET6, addr, port);
+        if (code != 0) {
+            emit_error(code);
             return;
         }
     }
