@@ -4,17 +4,7 @@
 
 #include "stream.hpp"
 
-#include <functional>
-
-#include <event2/util.h>
-
 struct bufferevent;
-
-void relight_once_cb(evutil_socket_t, short, void *ptr) {
-    auto funcptr = static_cast<std::function<void()> *>(ptr);
-    (*funcptr)();
-    delete funcptr;
-}
 
 void relight_bufev_read(bufferevent *, void *ptr) {
     auto so = static_cast<RELIGHT_NAMESPACE::Stream *>(ptr);

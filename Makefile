@@ -3,8 +3,9 @@ CXXFLAGS = -Wall -Wextra -std=c++14 -g
 LDFLAGS = -L /usr/local/lib -levent
 
 HEADERS = bytes.hpp poller.hpp stream.hpp var.hpp
+OBJECTS = main.o poller.o stream.o
 
-main: main.o relight-impl.o $(HEADERS)
-	$(CXX) $(LDFLAGS) -o main main.o relight-impl.o
+main: $(OBJECTS) $(HEADERS)
+	$(CXX) $(LDFLAGS) -o main $(OBJECTS)
 clean:
-	rm -rf -- *.o main
+	rm -rf -- main $(OBJECTS)
