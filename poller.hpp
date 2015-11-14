@@ -10,6 +10,7 @@
 
 struct event_base;
 
+// Libevent callbacks should be C style functions
 extern "C" {
 void relight_once_cb(evutil_socket_t, short, void *);
 }

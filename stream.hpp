@@ -21,6 +21,7 @@
 
 struct bufferevent;
 
+// Libevent callbacks should be C style functions
 extern "C" {
 void relight_bufev_event(bufferevent *, short, void *);
 void relight_bufev_read(bufferevent *, void *);
