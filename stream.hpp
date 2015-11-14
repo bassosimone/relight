@@ -2,9 +2,9 @@
 #define RELIGHT_STREAM_HPP
 
 #include "bytes.hpp"
-#include "error-code.h"
+#include "error-code.hpp"
 #include "poller.hpp"
-#include "utils-net.h"
+#include "utils-net.hpp"
 #include "var.hpp"
 
 #include <event2/bufferevent.h>
