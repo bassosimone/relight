@@ -7,7 +7,6 @@
 #include <event2/util.h>
 
 #include <functional>
-#include <map>
 #include <new>
 #include <stdexcept>
 
@@ -43,19 +42,13 @@ class Poller {
         }
     }
 
-    template <typename T> void with(Var<T> t, std::function<void(
-            std::function<void(std::function<void()>)>)> init) {
-        T *p = t.get();
-        if (running_.find(p) != running_.end()) {
-            throw std::runtime_error("element already there");
-        }
-        running_[p] = [=]() {};  // keep t safe
-        std::function<void(std::function<void()>)> finish = [=](
-                std::function<void()> cleanup) {
-            running_.erase(p);
-            call_soon([=]() { cleanup(); });
-        };
-        call_soon([=]() { init(finish); });
+    void
+    with(std::function<void(std::function<void(std::function<void()>)>)> init) {
+        call_soon([=]() {
+            init([=](std::function<void()> cleanup) {
+                call_soon([=]() { cleanup(); });
+            });
+        });
     }
 
     void loop() {
@@ -78,7 +71,6 @@ class Poller {
 
   private:
     event_base *evbase_ = nullptr;
-    std::map<void *, std::function<void()>> running_;
 };
 
 }

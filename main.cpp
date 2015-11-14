@@ -9,8 +9,7 @@ using namespace relight;
 
 static void create_stream(Var<Poller> poller) {
     Var<Stream> stream(new Stream(poller));
-    poller->with<Stream>(stream, [=](
-            std::function<void(std::function<void()>)> leave_with) {
+    poller->with([=](std::function<void(std::function<void()>)> leave_with) {
         std::function<void()> cleanup = [=]() {
             poller->break_loop();
             stream->close();
