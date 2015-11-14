@@ -42,8 +42,8 @@ class Poller {
         }
     }
 
-    void
-    with(std::function<void(std::function<void(std::function<void()>)>)> init) {
+    void begin(std::function<void(std::function<
+            void(std::function<void()>)>)> init) {
         call_soon([=]() {
             init([=](std::function<void()> cleanup) {
                 call_soon([=]() { cleanup(); });
