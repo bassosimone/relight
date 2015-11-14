@@ -9,7 +9,13 @@ using namespace relight;
 
 static void create_stream(Var<Poller> poller) {
     Var<Stream> stream(new Stream(poller));
-    poller->with<Stream>(stream, [=]() {
+    poller->with<Stream>(stream, [=](
+            std::function<void(std::function<void()>)> leave_with) {
+        std::function<void()> cleanup = [=]() {
+            poller->break_loop();
+            stream->close();
+            std::cerr << "break_with\n";
+        };
         std::cerr << "with\n";
         stream->connect_ipv4("127.0.0.1", 8080, [=]() {
             std::cerr << "connected\n";
@@ -17,7 +23,7 @@ static void create_stream(Var<Poller> poller) {
                 stream->on_flush([=]() {
                     stream->write("flushed\n");
                     stream->on_data([=](Var<Bytes>) {
-                        poller->break_with<Stream>(stream);
+                        leave_with(cleanup);
                     });
                     stream->on_flush([]() {});
                 });
@@ -25,16 +31,12 @@ static void create_stream(Var<Poller> poller) {
             });
             stream->on_error([=](int err) {
                 std::cerr << "error: " << err << "\n";
-                poller->break_with<Stream>(stream);
+                leave_with(cleanup);
             });
         }, [=](int err) {
             std::cerr << "connect err: " << err << "\n";
-            poller->break_with<Stream>(stream);
+            leave_with(cleanup);
         });
-    }, [=]() {
-        poller->break_loop();
-        stream->close();
-        std::cerr << "break_with\n";
     });
 }
 

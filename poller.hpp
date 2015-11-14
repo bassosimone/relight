@@ -43,21 +43,19 @@ class Poller {
         }
     }
 
-    template <typename T> void with(Var<T> t, std::function<void()> init,
-                                    std::function<void()> finish) {
-        auto p = t.get();
+    template <typename T> void with(Var<T> t, std::function<void(
+            std::function<void(std::function<void()>)>)> init) {
+        T *p = t.get();
         if (running_.find(p) != running_.end()) {
             throw std::runtime_error("element already there");
         }
-        running_[p] = [=]() { finish(); };  // keep t safe
-        call_soon([=]() { init(); });
-    }
-
-    template <typename T> void break_with(Var<T> t) {
-        auto p = t.get();
-        std::function<void()> finish_wrapper = running_.at(p);
-        running_.erase(p);
-        call_soon([=]() { finish_wrapper(); });
+        running_[p] = [=]() {};  // keep t safe
+        std::function<void(std::function<void()>)> finish = [=](
+                std::function<void()> cleanup) {
+            running_.erase(p);
+            call_soon([=]() { cleanup(); });
+        };
+        call_soon([=]() { init(finish); });
     }
 
     void loop() {
