@@ -42,7 +42,7 @@ class Poller {
         }
     }
 
-    void begin(std::function<void(std::function<
+    void run(std::function<void(std::function<
             void(std::function<void()>)>)> init) {
         call_soon([=]() {
             init([=](std::function<void()> cleanup) {

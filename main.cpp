@@ -9,7 +9,7 @@ using namespace relight;
 
 static void create_stream(Var<Poller> poller) {
     Var<Stream> stream(new Stream(poller));
-    poller->begin([=](std::function<void(std::function<void()>)> end) {
+    poller->run([=](std::function<void(std::function<void()>)> stop) {
         std::function<void()> cleanup = [=]() {
             poller->break_loop();
             stream->close();
@@ -22,7 +22,7 @@ static void create_stream(Var<Poller> poller) {
                 stream->on_flush([=]() {
                     stream->write("flushed\n");
                     stream->on_data([=](Var<Bytes>) {
-                        end(cleanup);
+                        stop(cleanup);
                     });
                     stream->on_flush([]() {});
                 });
@@ -30,11 +30,11 @@ static void create_stream(Var<Poller> poller) {
             });
             stream->on_error([=](int err) {
                 std::cerr << "error: " << err << "\n";
-                end(cleanup);
+                stop(cleanup);
             });
         }, [=](int err) {
             std::cerr << "connect err: " << err << "\n";
-            end(cleanup);
+            stop(cleanup);
         });
     });
 }
