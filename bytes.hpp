@@ -10,9 +10,7 @@
 
 struct evbuffer;
 
-#ifdef RELIGHT_NAMESPACE
-namespace RELIGHT_NAMESPACE {
-#endif
+namespace relight {
 
 class Bytes {
   public:
@@ -60,7 +58,5 @@ class Bytes {
     evbuffer *evbuf_ = nullptr;
 };
 
-#ifdef RELIGHT_NAMESPACE
 }
-#endif
 #endif

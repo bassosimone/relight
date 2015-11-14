@@ -1,10 +1,11 @@
+#include "bytes.hpp"
 #include "poller.hpp"
 #include "stream.hpp"
 #include "var.hpp"
 
 #include <iostream>
 
-class Bytes;
+using namespace relight;
 
 int main() {
     Var<Poller> poller(new Poller);

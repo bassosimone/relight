@@ -5,9 +5,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-#ifdef RELIGHT_NAMESPACE
-namespace RELIGHT_NAMESPACE {
-#endif
+namespace relight {
 
 /// Improved std::shared_ptr<T> with null pointer checks
 template <typename T> class Var : public std::shared_ptr<T> {
@@ -38,8 +36,5 @@ template <typename T> class Var : public std::shared_ptr<T> {
     // DOING THAT CREATES THE RISK OF OBJECT SLICING.
 };
 
-#ifdef RELIGHT_NAMESPACE
 }
-#endif
-
 #endif

@@ -30,9 +30,7 @@ void relight_bufev_read(bufferevent *, void *);
 void relight_bufev_write(bufferevent *, void *);
 }
 
-#ifdef RELIGHT_NAMESPACE
-namespace RELIGHT_NAMESPACE {
-#endif
+namespace relight {
 
 class Stream {
   public:
@@ -171,8 +169,5 @@ class Stream {
     std::function<void(int)> error_fn_;
 };
 
-#ifdef RELIGHT_NAMESPACE
 }
-#endif
-
 #endif

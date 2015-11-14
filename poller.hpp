@@ -15,9 +15,7 @@ extern "C" {
 void relight_once_cb(evutil_socket_t, short, void *);
 }
 
-#ifdef RELIGHT_NAMESPACE
-namespace RELIGHT_NAMESPACE {
-#endif
+namespace relight {
 
 class Poller {
   public:
@@ -64,7 +62,5 @@ class Poller {
     event_base *evbase_ = nullptr;
 };
 
-#ifdef RELIGHT_NAMESPACE
 }
-#endif
 #endif
