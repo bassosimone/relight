@@ -3,6 +3,10 @@
 #include "stream.hpp"
 #include "var.hpp"
 
+#include "poller.cpp"
+#include "stream.cpp"
+#include "utils-net.cpp"
+
 #include <iostream>
 
 using namespace relight;
