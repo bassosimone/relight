@@ -6,10 +6,14 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+CLANGXX_FLAGS="-c -emit-llvm -Wall -Wextra -std=c++14 -xc++"
+
 if [ $(uname) = "Darwin" ]; then
     LIBEVENT=/usr/local/lib/libevent.dylib
 elif [ $(uname) = "Linux" ]; then
-    LIBEVENT=/usr/lib/libevent.so
+    LIBEVENT=/usr/lib/x86_64-linux-gnu/libevent_core.so
+    # See: http://stackoverflow.com/a/30160379
+    CLANGXX_FLAGS="-fno-use-cxa-atexit $CLANGXX_FLAGS"
 else
     echo "FATAL: unknown uname: $(uname)" 1>&2
     exit 1
@@ -17,5 +21,4 @@ fi
 
 SCRIPT=$1
 shift
-cat $SCRIPT | clang++ -c -emit-llvm -Wall -Wextra -std=c++14 -o- -xc++ - | \
-    lli -load=$LIBEVENT - -- "$@"
+cat $SCRIPT | clang++ ${CLANGXX_FLAGS} -o- - | lli -load=$LIBEVENT - -- "$@"
