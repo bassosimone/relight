@@ -3,9 +3,11 @@
 #include "stream.hpp"
 #include "var.hpp"
 
+#ifdef SCRIPTED
 #include "poller.cpp"
 #include "stream.cpp"
 #include "utils-net.cpp"
+#endif
 
 #include <iostream>
 

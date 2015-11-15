@@ -6,7 +6,7 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-CLANGXX_FLAGS="-c -emit-llvm -Wall -Wextra -std=c++14 -xc++"
+CLANGXX_FLAGS="-c -emit-llvm -Wall -Wextra -std=c++14 -xc++ -DSCRIPTED"
 
 if [ $(uname) = "Darwin" ]; then
     LIBEVENT=/usr/local/lib/libevent.dylib
