@@ -1,6 +1,7 @@
 #include "bytes.hpp"
 #include "dns.hpp"
 #include "error-code.hpp"
+#include "for-each.hpp"
 #include "poller.hpp"
 #include "resolver.hpp"
 #include "stream.hpp"
