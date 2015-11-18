@@ -1,2 +1,3 @@
 *.o
-main
+main_stream
+main_dns

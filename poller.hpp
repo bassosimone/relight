@@ -69,6 +69,12 @@ class Poller {
         }
     }
 
+    static Var<Poller> get_default() {
+        static Var<Poller> singleton;
+        if (!singleton) singleton.reset(new Poller);
+        return singleton;
+    }
+
   private:
     event_base *evbase_ = nullptr;
 };

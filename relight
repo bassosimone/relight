@@ -8,12 +8,13 @@ fi
 
 CLANGXX_FLAGS="-c -emit-llvm -Wall -Wextra -std=c++14 -xc++ -DSCRIPTED"
 
+# See: http://stackoverflow.com/a/30160379
+CLANGXX_FLAGS="-fno-use-cxa-atexit $CLANGXX_FLAGS"
+
 if [ $(uname) = "Darwin" ]; then
     LIBEVENT=/usr/local/lib/libevent.dylib
 elif [ $(uname) = "Linux" ]; then
     LIBEVENT=/usr/lib/x86_64-linux-gnu/libevent_core.so
-    # See: http://stackoverflow.com/a/30160379
-    CLANGXX_FLAGS="-fno-use-cxa-atexit $CLANGXX_FLAGS"
 else
     echo "FATAL: unknown uname: $(uname)" 1>&2
     exit 1

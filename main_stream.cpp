@@ -1,9 +1,14 @@
 #include "bytes.hpp"
+#include "dns.hpp"
+#include "error-code.hpp"
 #include "poller.hpp"
+#include "resolver.hpp"
 #include "stream.hpp"
+#include "utils-net.hpp"
 #include "var.hpp"
 
 #ifdef SCRIPTED
+#include "dns.cpp"
 #include "poller.cpp"
 #include "stream.cpp"
 #include "utils-net.cpp"
