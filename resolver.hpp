@@ -7,6 +7,7 @@
 #include <event2/dns.h>
 
 namespace relight {
+namespace dns {
 
 class Resolver {
   public:
@@ -48,5 +49,5 @@ class Resolver {
 };
 
 }
-
+}
 #endif

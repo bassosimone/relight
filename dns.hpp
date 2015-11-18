@@ -6,10 +6,12 @@
 #include <string>
 
 namespace relight {
+namespace dns {
 
-typedef std::function<void(int, std::list<std::string>)> dns_callback;
+typedef std::function<void(int, std::list<std::string>)> callback;
 
-void dns_resolve4(std::string domain, dns_callback);
+void resolve4(std::string domain, callback);
 
+}
 }
 #endif

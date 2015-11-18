@@ -19,14 +19,16 @@
 using namespace relight;
 
 static void make_request() {
-    dns_resolve4("www.torproject.org", [](int err, std::list<std::string> addrs) {
-        if (err) {
-            std::cerr << "Error: " << err << "\n";
-            return;
-        }
-        for (auto &s : addrs) std::cout << "    - " << s << "\n";
-        Poller::get_default()->break_loop();
-    });
+    dns::resolve4("www.torproject.org",
+                  [](int err, std::list<std::string> addrs) {
+                      if (err) {
+                          std::cerr << "Error: " << err << "\n";
+                          return;
+                      }
+                      for (auto &s : addrs)
+                          std::cout << "    - " << s << "\n";
+                      Poller::get_default()->break_loop();
+                  });
 }
 
 int main() {

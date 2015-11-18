@@ -32,8 +32,9 @@ static std::list<std::string> ipv4_address_list(int count, void *addresses) {
 }
 
 namespace relight {
+namespace dns {
 
-void dns_resolve4(std::string domain, dns_callback callback) {
+void resolve4(std::string domain, callback callback) {
     Var<Resolver> resolver = Resolver::get_default();
     resolver->get_poller()->call_soon([=]() {
         //double ticks = 0.0; // TODO
@@ -50,7 +51,7 @@ void dns_resolve4(std::string domain, dns_callback callback) {
             return;
         }
     });
-
 }
 
-} // namespace
+} // namespace dns
+} // namespace relight
