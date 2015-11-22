@@ -20,7 +20,7 @@ void for_each(Var<Poller> poller, std::vector<T> vec,
             on_elem(vec.at(pos), [=]() {
                 for_each<T>(poller, vec, on_elem, on_end, pos + 1);
             });
-        } catch (const std::out_of_range &) {
+        } catch (std::out_of_range &) {
             on_end();
             return;
         }
