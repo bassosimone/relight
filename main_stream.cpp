@@ -12,8 +12,8 @@
 
 #ifdef SCRIPTED
 #include "dns.cpp"
+#include "net.cpp"
 #include "poller.cpp"
-#include "stream.cpp"
 #include "utils-net.cpp"
 #endif
 
@@ -22,7 +22,7 @@
 using namespace relight;
 
 static void create_stream(Var<Poller> poller) {
-    Stream(poller);
+    Stream stream(poller);
     std::function<void()> cleanup = [=]() {
         poller->break_loop();
         stream.close();
@@ -36,7 +36,7 @@ static void create_stream(Var<Poller> poller) {
             stream.on_flush([=]() {
                 stream.write("flushed\n");
                 stream.on_data([=](Var<Bytes>) {
-                    stop(cleanup);
+                    cleanup();
                 });
                 stream.on_flush([]() {});
             });
@@ -44,11 +44,11 @@ static void create_stream(Var<Poller> poller) {
         });
         stream.on_error([=](int err) {
             std::cerr << "error: " << err << "\n";
-            stop(cleanup);
+            cleanup();
         });
     }, [=](int err) {
         std::cerr << "connect err: " << err << "\n";
-        stop(cleanup);
+        cleanup();
     });
 }
 

@@ -25,44 +25,52 @@ class Stream {
             : socket(net::new_socket(poller, filenum)) {}
 
     void connect_ipv4(const char *addr, int port, std::function<void()> cb,
-                      std::function<void(int)> eb) {
+                      std::function<void(int)> eb) const {
         net::connect_ipv4(socket, addr, port, cb, eb);
     }
 
     void connect_ipv6(const char *addr, int port, std::function<void()> cb,
-                      std::function<void(int)> eb) {
+                      std::function<void(int)> eb) const {
         net::connect_ipv6(socket, addr, port, cb, eb);
     }
 
-    void write(Var<Bytes> bytes) {
+    void write(Var<Bytes> bytes) const {
         net::write(socket, bytes);
     }
 
-    void write(std::string s) {
+    void write(std::string s) const {
         net::write(socket, s);
     }
 
-    void on_connect(std::function<void()> f) { net::on_connect(socket, f); }
+    void on_connect(std::function<void()> f) const {
+        net::on_connect(socket, f);
+    }
 
-    void emit_connect() { net::emit_connect(socket); }
+    void emit_connect() const { net::emit_connect(socket); }
 
-    void on_data(std::function<void(Var<Bytes>)> f) { net::on_data(socket, f); }
+    void on_data(std::function<void(Var<Bytes>)> f) const {
+        net::on_data(socket, f);
+    }
 
-    void emit_read() { net::emit_libevent_read(socket); }
+    void emit_read() const { net::emit_libevent_read(socket); }
 
-    void emit_data(Var<Bytes> bytes) { net::emit_data(socket, bytes); }
+    void emit_data(Var<Bytes> bytes) const { net::emit_data(socket, bytes); }
 
-    void on_flush(std::function<void()> f) { net::on_flush(socket, f); }
+    void on_flush(std::function<void()> f) const { net::on_flush(socket, f); }
 
-    void emit_flush() { net::emit_flush(socket); }
+    void emit_flush() const { net::emit_flush(socket); }
 
-    void on_error(std::function<void(int)> f) { net::on_error(socket, f); }
+    void on_error(std::function<void(int)> f) const {
+        net::on_error(socket, f);
+    }
 
-    void emit_event(short event) { net::emit_libevent_event(socket, event); }
+    void emit_event(short event) const {
+        net::emit_libevent_event(socket, event);
+    }
 
-    void emit_error(int error) { net::emit_error(socket, error); }
+    void emit_error(int error) const { net::emit_error(socket, error); }
 
-    void close() { net::close(socket); }
+    void close() const { net::close(socket); }
 
     ~Stream() {}
 
