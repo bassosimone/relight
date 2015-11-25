@@ -1,3 +1,5 @@
+// Well, I actually really hate this.
+
 #include "bytes.hpp"
 #include "dns.hpp"
 #include "error-code.hpp"
