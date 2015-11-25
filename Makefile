@@ -4,7 +4,7 @@ LDFLAGS = -L /usr/local/lib -levent
 
 HEADERS = bytes.hpp dns.hpp for-each.hpp net.hpp poller.hpp resolver.hpp \
           stream.hpp var.hpp
-OBJECTS = dns.o net.o poller.o stream.o utils-net.o
+OBJECTS = dns.o net.o poller.o utils-net.o
 EXECUTABLES = main_dns main_net main_stream
 
 all: $(EXECUTABLES)

@@ -36,15 +36,18 @@ static void bufev_event(bufferevent *, short event, void *ptr) {
     emit_libevent_event(so->self, event);
 }
 
-Var<Socket> new_socket(Var<Poller> poller) {
+Var<Socket> new_socket(Var<Poller> poller, evutil_socket_t filenum) {
     Var<Socket> s(new Socket);
     s->poller = poller;
-    if ((s->bufev = bufferevent_socket_new(poller->get_event_base(), -1,
+    if ((s->bufev = bufferevent_socket_new(poller->get_event_base(), filenum,
                                            BEV_OPT_CLOSE_ON_FREE)) == nullptr) {
         throw std::bad_alloc();
     }
     s->self = s;
     bufferevent_setcb(s->bufev, bufev_read, bufev_write, bufev_event, s.get());
+    if (filenum != -1 && bufferevent_enable(s->bufev, EV_READ) != 0) {
+        throw std::runtime_error("bufferevent_enable");
+    }
     return s;
 }
 

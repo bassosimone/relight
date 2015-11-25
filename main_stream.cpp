@@ -22,34 +22,33 @@
 using namespace relight;
 
 static void create_stream(Var<Poller> poller) {
-    Var<Stream> stream(new Stream(poller));
-    poller->run([=](std::function<void(std::function<void()>)> stop) {
-        std::function<void()> cleanup = [=]() {
-            poller->break_loop();
-            stream->close();
-            std::cerr << "break_with\n";
-        };
-        std::cerr << "with\n";
-        stream->connect_ipv4("127.0.0.1", 8080, [=]() {
-            std::cerr << "connected\n";
-            stream->on_data([=](Var<Bytes>) {
-                stream->on_flush([=]() {
-                    stream->write("flushed\n");
-                    stream->on_data([=](Var<Bytes>) {
-                        stop(cleanup);
-                    });
-                    stream->on_flush([]() {});
+    Stream(poller);
+    std::function<void()> cleanup = [=]() {
+        poller->break_loop();
+        stream.close();
+        std::cerr << "break_with\n";
+    };
+    stream.connect_ipv4("127.0.0.1", 8080, [=]() {
+        // Object lifetime note: stream is copyable / movable etc. and
+        // so is cleanup, thus everything is safe and alive.
+        std::cerr << "connected\n";
+        stream.on_data([=](Var<Bytes>) {
+            stream.on_flush([=]() {
+                stream.write("flushed\n");
+                stream.on_data([=](Var<Bytes>) {
+                    stop(cleanup);
                 });
-                stream->write("received first chunk\n");
+                stream.on_flush([]() {});
             });
-            stream->on_error([=](int err) {
-                std::cerr << "error: " << err << "\n";
-                stop(cleanup);
-            });
-        }, [=](int err) {
-            std::cerr << "connect err: " << err << "\n";
+            stream.write("received first chunk\n");
+        });
+        stream.on_error([=](int err) {
+            std::cerr << "error: " << err << "\n";
             stop(cleanup);
         });
+    }, [=](int err) {
+        std::cerr << "connect err: " << err << "\n";
+        stop(cleanup);
     });
 }
 

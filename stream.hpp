@@ -1,172 +1,73 @@
 #ifndef RELIGHT_STREAM_HPP
 #define RELIGHT_STREAM_HPP
 
-#include "bytes.hpp"
-#include "error-code.hpp"
-#include "poller.hpp"
-#include "utils-net.hpp"
-#include "var.hpp"
-
-#include <event2/bufferevent.h>
-#include <event2/event.h>
-#include <event2/util.h>
-
 #include <functional>
-#include <new>
-#include <stdexcept>
 #include <string>
-
-#include <string.h>
-
-#include <netinet/in.h>
-#include <sys/socket.h>
-
-struct bufferevent;
-
-// Libevent callbacks should be C style functions
-extern "C" {
-void relight_bufev_event(bufferevent *, short, void *);
-void relight_bufev_read(bufferevent *, void *);
-void relight_bufev_write(bufferevent *, void *);
-}
+#include "net.hpp"
+#include "var.hpp"
 
 namespace relight {
 
+class Bytes;
+class Poller;
+
 class Stream {
+    // Implementation note: this is just a frontend to provide object
+    // semantic to an otherwise C style API. In turn, the good thing about
+    // the C style API is that objects are only kept alive by means of
+    // smart pointers, thus leading to safer code. And this proxy doesn't
+    // change the game either, since the only piece of data that it does
+    // contain is indeed just the smart pointer thus increasing refs.
   public:
-    Stream(Var<Poller> poller) : Stream(poller, -1) {}
+    Stream(Var<Poller> poller) : socket(net::new_socket(poller)) {}
 
-    Stream(Var<Poller> poller, evutil_socket_t filenum) : poller_(poller) {
-        if ((bufev_ = bufferevent_socket_new(poller->get_event_base(), filenum,
-                                           BEV_OPT_CLOSE_ON_FREE)) == nullptr) {
-            throw std::bad_alloc();
-        }
-        bufferevent_setcb(bufev_, relight_bufev_read, relight_bufev_write,
-                          relight_bufev_event, this);
-        if (filenum != -1 && bufferevent_enable(bufev_, EV_READ) != 0) {
-            throw std::runtime_error("bufferevent_enable");
-        }
-    }
-
-    Stream(Stream &) = delete;
-    Stream &operator=(Stream &) = delete;
-    Stream(Stream &&) = delete;
-    Stream &operator=(Stream &&) = delete;
+    Stream(Var<Poller> poller, evutil_socket_t filenum)
+            : socket(net::new_socket(poller, filenum)) {}
 
     void connect_ipv4(const char *addr, int port, std::function<void()> cb,
                       std::function<void(int)> eb) {
-        on_connect(cb);
-        on_error(eb);
-        ErrorCode code = relight_connect(bufev_, AF_INET, addr, port);
-        if (code != 0) {
-            emit_error(code);
-            return;
-        }
+        net::connect_ipv4(socket, addr, port, cb, eb);
     }
 
     void connect_ipv6(const char *addr, int port, std::function<void()> cb,
                       std::function<void(int)> eb) {
-        on_connect(cb);
-        on_error(eb);
-        ErrorCode code = relight_connect(bufev_, AF_INET6, addr, port);
-        if (code != 0) {
-            emit_error(code);
-            return;
-        }
+        net::connect_ipv6(socket, addr, port, cb, eb);
     }
 
     void write(Var<Bytes> bytes) {
-        if (bufferevent_write_buffer(bufev_, bytes->get_evbuffer()) != 0) {
-            throw std::runtime_error("evbuffer_write_buffer");
-        }
+        net::write(socket, bytes);
     }
 
     void write(std::string s) {
-        if (bufferevent_write(bufev_, s.c_str(), s.length()) != 0) {
-            throw std::runtime_error("bufferevent_write");
-        }
+        net::write(socket, s);
     }
 
-    void on_connect(std::function<void()> f) { connect_fn_ = f; }
+    void on_connect(std::function<void()> f) { net::on_connect(socket, f); }
 
-    void emit_connect() {
-        if (connect_fn_) {
-            auto fn = connect_fn_;
-            fn();
-        }
-    }
+    void emit_connect() { net::emit_connect(socket); }
 
-    void on_data(std::function<void(Var<Bytes>)> f) { data_fn_ = f; }
+    void on_data(std::function<void(Var<Bytes>)> f) { net::on_data(socket, f); }
 
-    void emit_read() {
-        auto evbuff = bufferevent_get_input(bufev_);
-        if (evbuff == nullptr) {
-            throw std::runtime_error("bufferevent_get_input");
-        }
-        Var<Bytes> bytes(new Bytes(evbuff));
-        emit_data(bytes);
-    }
+    void emit_read() { net::emit_libevent_read(socket); }
 
-    void emit_data(Var<Bytes> bytes) {
-        if (data_fn_) {
-            auto fn = data_fn_;
-            fn(bytes);
-        }
-    }
+    void emit_data(Var<Bytes> bytes) { net::emit_data(socket, bytes); }
 
-    void on_flush(std::function<void()> f) { flush_fn_ = f; }
+    void on_flush(std::function<void()> f) { net::on_flush(socket, f); }
 
-    void emit_flush() {
-        if (flush_fn_) {
-            auto fn = flush_fn_;
-            fn();
-        }
-    }
+    void emit_flush() { net::emit_flush(socket); }
 
-    void on_error(std::function<void(int)> f) { error_fn_ = f; }
+    void on_error(std::function<void(int)> f) { net::on_error(socket, f); }
 
-    void emit_event(short event) {
-        if ((event & BEV_EVENT_CONNECTED)) {
-            if (bufferevent_enable(bufev_, EV_READ) != 0) {
-                throw std::runtime_error("bufferevent_enable");
-            }
-            emit_connect();
-        } else if ((event & BEV_EVENT_EOF)) {
-            emit_error(3);
-        } else if ((event & BEV_EVENT_TIMEOUT)) {
-            emit_error(2);
-        } else {
-            emit_error(1);
-        }
-    }
+    void emit_event(short event) { net::emit_libevent_event(socket, event); }
 
-    void emit_error(int error) {
-        if (error_fn_) {
-            auto fn = error_fn_;
-            fn(error);
-        }
-    }
+    void emit_error(int error) { net::emit_error(socket, error); }
 
-    void close() {
-        if (bufev_ != nullptr) {
-            bufferevent_free(bufev_);
-            connect_fn_ = nullptr;
-            data_fn_ = nullptr;
-            flush_fn_ = nullptr;
-            error_fn_ = nullptr;
-            bufev_ = nullptr;
-        }
-    }
+    void close() { net::close(socket); }
 
-    ~Stream() { close(); }
+    ~Stream() {}
 
   private:
-    bufferevent *bufev_ = nullptr;
-    Var<Poller> poller_;
-    std::function<void()> connect_fn_;
-    std::function<void(Var<Bytes>)> data_fn_;
-    std::function<void()> flush_fn_;
-    std::function<void(int)> error_fn_;
+    Var<Socket> socket;
 };
 
 }

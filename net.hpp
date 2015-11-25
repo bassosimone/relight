@@ -1,6 +1,7 @@
 #ifndef RELIGHT_NET_HPP
 #define RELIGHT_NET_HPP
 
+#include <event2/util.h>
 #include <functional>
 #include <string>
 #include "var.hpp"
@@ -13,7 +14,7 @@ struct Socket;
 
 namespace net {
 
-Var<Socket> new_socket(Var<Poller> poller);
+Var<Socket> new_socket(Var<Poller> poller, evutil_socket_t filenum = -1);
 
 void connect_ipv4(Var<Socket> socket, const char *addr, int port,
                   std::function<void()> cb, std::function<void(int)> eb);
