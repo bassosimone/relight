@@ -42,15 +42,6 @@ class Poller {
         }
     }
 
-    void run(std::function<void(std::function<
-            void(std::function<void()>)>)> init) {
-        call_soon([=]() {
-            init([=](std::function<void()> cleanup) {
-                call_soon([=]() { cleanup(); });
-            });
-        });
-    }
-
     void loop() {
         if (event_base_dispatch(evbase_) != 0) {
             throw std::runtime_error("event_base_dispatch");
