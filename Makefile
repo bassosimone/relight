@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++11 -g
-LDFLAGS = -L /usr/local/lib -levent
+CXXFLAGS = $(COVERAGE) -Wall -Wextra -std=c++11 -g
+LDFLAGS = $(COVERAGE) -L /usr/local/lib -levent
 
 HEADERS = bytes.hpp dns.hpp dns-resolver.hpp for-each.hpp net.hpp poller.hpp \
           stream.hpp var.hpp
