@@ -30,8 +30,7 @@ static void make_request() {
                 std::cout << "\n";
                 next();
             });
-        },
-        [=]() { Poller::get_default()->break_loop(); });
+        }, [=]() { Poller::get_default()->break_loop(); });
     });
 }
 
