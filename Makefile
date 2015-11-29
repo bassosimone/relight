@@ -1,4 +1,5 @@
 CXX = g++
+CPPFLAGS = -I /usr/local/include
 CXXFLAGS = $(COVERAGE) -Wall -Wextra -std=c++11 -g
 LDFLAGS = $(COVERAGE) -L /usr/local/lib -levent
 
