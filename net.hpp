@@ -9,8 +9,8 @@
 
 struct bufferevent;
 
-ErrorCode relight_connect(bufferevent *bufev, int family,
-                          const char *addr, int port);
+relight::ErrorCode relight_connect(bufferevent *bufev, int family,
+                                   const char *addr, int port);
 
 namespace relight {
 

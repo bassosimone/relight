@@ -10,8 +10,8 @@
 #include "poller.hpp"
 #include "net.hpp"
 
-ErrorCode relight_connect(bufferevent *bufev, int family,
-                          const char *addr, int port) {
+relight::ErrorCode relight_connect(bufferevent *bufev, int family,
+                                   const char *addr, int port) {
     if (bufferevent_getfd(bufev) != -1) {
         return 10;
     }

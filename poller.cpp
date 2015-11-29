@@ -1,7 +1,3 @@
-#ifndef RELIGHT_NAMESPACE
-#define RELIGHT_NAMESPACE
-#endif
-
 #include <functional>
 
 #include <event2/util.h>
