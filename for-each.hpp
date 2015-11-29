@@ -12,13 +12,16 @@ namespace relight {
 typedef std::function<void()> next_func;
 
 template <typename T>
-void for_each(Var<Poller> poller, std::vector<T> vec,
+void for_each(std::vector<T> vec,
               std::function<void(T, next_func)> on_elem,
-              std::function<void()> on_end, size_t pos = 0) {
+              std::function<void()> on_end,
+              Var<Poller> poller = nullptr,
+              size_t pos = 0) {
+    if (!poller) poller = Poller::get_default();
     poller->call_soon([=]() {
         try {
             on_elem(vec.at(pos), [=]() {
-                for_each<T>(poller, vec, on_elem, on_end, pos + 1);
+                for_each<T>(vec, on_elem, on_end, poller, pos + 1);
             });
         } catch (std::out_of_range &) {
             on_end();

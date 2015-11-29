@@ -22,18 +22,16 @@ static void make_request() {
     dns::resolve4("www.torproject.org",
             [](int err, std::vector<std::string> addrs) {
         if (err) throw err;
-        for_each<std::string>(
-            Poller::get_default(), addrs,
-            [=](std::string s, next_func next) {
-                std::cout << "    - " << s;
-                dns::reverse4(s, [=](int err, std::vector<std::string> revs) {
-                    if (err) throw err;
-                    for (auto &s : revs) std::cout << " " << s;
-                    std::cout << "\n";
-                    next();
-                });
-            },
-            [=]() { Poller::get_default()->break_loop(); });
+        for_each<std::string>(addrs, [=](std::string s, next_func next) {
+            std::cout << "    - " << s;
+            dns::reverse4(s, [=](int err, std::vector<std::string> revs) {
+                if (err) throw err;
+                for (auto &s : revs) std::cout << " " << s;
+                std::cout << "\n";
+                next();
+            });
+        },
+        [=]() { Poller::get_default()->break_loop(); });
     });
 }
 
