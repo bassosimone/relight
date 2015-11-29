@@ -8,7 +8,7 @@ HEADERS = bytes.hpp dns.hpp dns-resolver.hpp for-each.hpp net.hpp poller.hpp \
 OBJECTS = dns.o net.o poller.o
 EXECUTABLES = main_dns main_stream
 
-.PHONY: all check clean cppcheck
+.PHONY: all check clean cppcheck scan-build
 
 all: $(EXECUTABLES)
 main_dns: main_dns.o $(OBJECTS) $(HEADERS)
@@ -22,3 +22,9 @@ check: $(EXECUTABLES)
 	./main_stream
 cppcheck:
 	cppcheck --enable=all .
+scan-build:
+	@if [ -z "$(SCAN_BUILD)" ]; then                                       \
+	  echo "usage: make SCAN_BUILD=scan-build-X.Y";                        \
+	  exit 1;                                                              \
+	fi;                                                                    \
+	$(SCAN_BUILD) $(MAKE) -j2

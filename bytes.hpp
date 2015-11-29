@@ -29,7 +29,7 @@ class Bytes {
         write(base, count);
     }
 
-    Bytes(evbuffer *buf) explicit : Bytes() {
+    explicit Bytes(evbuffer *buf) : Bytes() {
         write(buf);
     }
 
