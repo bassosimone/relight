@@ -9,6 +9,7 @@ namespace relight {
 
 /// Improved std::shared_ptr<T> with null pointer checks
 template <typename T> class Var : public std::shared_ptr<T> {
+    // Note: implementation copied verbatim from measurement-kit
     using std::shared_ptr<T>::shared_ptr;
 
   public:
