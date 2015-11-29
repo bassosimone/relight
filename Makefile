@@ -8,7 +8,7 @@ HEADERS = bytes.hpp dns.hpp dns-resolver.hpp for-each.hpp net.hpp poller.hpp \
 OBJECTS = dns.o net.o poller.o
 EXECUTABLES = main_dns main_stream
 
-.PHONY: all check clean
+.PHONY: all check clean cppcheck
 
 all: $(EXECUTABLES)
 main_dns: main_dns.o $(OBJECTS) $(HEADERS)
@@ -20,3 +20,5 @@ clean:
 check: $(EXECUTABLES)
 	./main_dns
 	./main_stream
+cppcheck:
+	cppcheck --enable=all .

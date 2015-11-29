@@ -19,7 +19,7 @@ class Stream {
     // change the game either, since the only piece of data that it does
     // contain is indeed just the smart pointer thus increasing refs.
   public:
-    Stream(Var<Poller> poller) : socket(net::new_socket(poller)) {}
+    Stream(Var<Poller> poller) explicit : socket(net::new_socket(poller)) {}
 
     Stream(Var<Poller> poller, evutil_socket_t filenum)
             : socket(net::new_socket(poller, filenum)) {}

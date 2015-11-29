@@ -19,8 +19,8 @@ static void handle_resolve(int code, char type, int count, int ttl,
 static std::vector<std::string> ipv4_address_list(int count, void *addresses) {
     std::vector<std::string> results;
     static const int size = 4;
-    char string[128]; // Is wide enough (max. IPv6 length is 45 chars)
     if (count >= 0 && count <= INT_MAX / size + 1) {
+        char string[128]; // Is wide enough (max. IPv6 length is 45 chars)
         for (int i = 0; i < count; ++i) {
             // Note: address already in network byte order
             if (inet_ntop(AF_INET, (char *)addresses + i * size, string,

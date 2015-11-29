@@ -14,7 +14,7 @@ class Resolver {
   public:
     Resolver() {}
 
-    Resolver(Var<Poller> poller) : poller_(poller) {}
+    Resolver(Var<Poller> poller) explicit : poller_(poller) {}
 
     Resolver(Resolver &) = delete;
     Resolver &operator=(Resolver &) = delete;
