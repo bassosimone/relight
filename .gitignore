@@ -1,4 +1,3 @@
 *.o
 main_dns
-main_net
 main_stream
