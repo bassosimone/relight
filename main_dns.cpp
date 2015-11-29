@@ -2,17 +2,16 @@
 #include "dns.hpp"
 #include "error-code.hpp"
 #include "for-each.hpp"
+#include "net.hpp"
 #include "poller.hpp"
 #include "resolver.hpp"
 #include "stream.hpp"
-#include "utils-net.hpp"
 #include "var.hpp"
 
 #ifdef SCRIPTED
 #include "dns.cpp"
+#include "net.cpp"
 #include "poller.cpp"
-#include "stream.cpp"
-#include "utils-net.cpp"
 #endif
 
 #include <iostream>

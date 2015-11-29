@@ -4,7 +4,13 @@
 #include <event2/util.h>
 #include <functional>
 #include <string>
+#include "error-code.hpp"
 #include "var.hpp"
+
+struct bufferevent;
+
+ErrorCode relight_connect(bufferevent *bufev, int family,
+                          const char *addr, int port);
 
 namespace relight {
 

@@ -1,11 +1,43 @@
 #include <event2/bufferevent.h>
+#include <event2/util.h>
 #include <functional>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <string.h>
 #include <string>
 #include "bytes.hpp"
 #include "error-code.hpp"
 #include "poller.hpp"
 #include "net.hpp"
-#include "utils-net.hpp"
+
+ErrorCode relight_connect(bufferevent *bufev, int family,
+                          const char *addr, int port) {
+    if (bufferevent_getfd(bufev) != -1) {
+        return 10;
+    }
+    if (family == AF_INET) {
+        sockaddr_in sin;
+        memset(&sin, 0, sizeof(sin));
+        sin.sin_family = AF_INET;
+        if (evutil_inet_pton(AF_INET, addr, &sin.sin_addr) != 1) {
+            return 20;
+        }
+    } else if (family == AF_INET6) {
+        sockaddr_in6 sin6;
+        memset(&sin6, 0, sizeof(sin6));
+        sin6.sin6_family = AF_INET6;
+        if (evutil_inet_pton(AF_INET6, addr, &sin6.sin6_addr) != 1) {
+            return 20;
+        }
+    } else {
+        return 30;
+    }
+    if (bufferevent_socket_connect_hostname(bufev, nullptr, family, addr,
+                                            port) != 0) {
+        return 40;
+    }
+    return 0;
+}
 
 namespace relight {
 
