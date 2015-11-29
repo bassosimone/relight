@@ -9,6 +9,7 @@
 namespace relight {
 namespace dns {
 
+// TODO: ideally this should allow you to set alternative DNS servers
 class Resolver {
   public:
     Resolver() {}
@@ -48,6 +49,6 @@ class Resolver {
     evdns_base *base_ = nullptr;
 };
 
-}
-}
+} // namespace dns
+} // namespace relight
 #endif

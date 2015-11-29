@@ -1,5 +1,5 @@
 #include "dns.hpp"
-#include "resolver.hpp"
+#include "dns-resolver.hpp"
 
 #include <limits.h>
 
@@ -7,6 +7,7 @@
 
 typedef std::function<void(int, char, int, int, void *)> evdns_callback;
 
+// TODO: C callbacks should be declared with C linkage
 static void handle_resolve(int code, char type, int count, int ttl,
                            void *addresses, void *opaque) {
     evdns_callback *callback = static_cast<evdns_callback *>(opaque);
@@ -14,6 +15,7 @@ static void handle_resolve(int code, char type, int count, int ttl,
     delete callback;
 }
 
+// The following is derived from more general code in measurement-kit:
 static std::vector<std::string> ipv4_address_list(int count, void *addresses) {
     std::vector<std::string> results;
     static const int size = 4;
@@ -31,6 +33,7 @@ static std::vector<std::string> ipv4_address_list(int count, void *addresses) {
     return results;
 }
 
+// The following is copied from measurement-kit
 static std::vector<std::string> reverse_address_list(void *addresses) {
     std::vector<std::string> results;
     results.push_back(std::string(*(char **)addresses));
@@ -68,8 +71,8 @@ void reverse4(std::string address, callback callback) {
             callback(DNS_ERR_UNKNOWN, empty);
             return;
         }
-        evdns_callback *funcptr =
-            new evdns_callback([=](int code, char, int, int, void *addresses) {
+        evdns_callback *funcptr = new evdns_callback(
+            [=](int code, char, int, int, void *addresses) {
                 callback(code, reverse_address_list(addresses));
             });
         if (evdns_base_resolve_reverse(resolver->get_evdns_base(), &netaddr,

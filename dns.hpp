@@ -14,6 +14,6 @@ void resolve4(std::string domain, callback);
 
 void reverse4(std::string name, callback);
 
-}
-}
+} // namespace relight
+} // namespace dns
 #endif
